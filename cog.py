@@ -19,14 +19,14 @@ class HoresaseCog(commands.Cog):
         self.commands_list = {
             "--id X": "IDがXの画像を表示する",
             "--character X": "キャラクター名がXのランダムな画像を表示する",
-            "--word X": "名前がXの画像を表示する",
+            "--word X": "名前がXの画像を表示する（複数該当する場合はランダム）",
             "--list X": "キャラクター名がXの画像の名前を全て表示する。変数が無い場合はキャラクター名を全て表示する",
-            "--gacha": "全ての画像からランダムな画像を表示する。",
+            "--gacha": "全ての画像からランダムな画像を表示する",
             "--help": "ヘルプ画面を表示する",
             # "--kuso": "ク　ソ　リ　プ",
             # "--random": "ク　ソ　リ　プ(ver2)",
             # "--verbose": "画像取得時、各種データを表示する"
-            "--info": "このbotの詳細を表示する"
+            # "--info": "このbotの詳細を表示する"
         }
         self.kuso_flag = False
         self.random_kuso_flag = False
@@ -85,24 +85,24 @@ class HoresaseCog(commands.Cog):
     async def on_message(self, message):
         if message.author.bot:
             return 
-        if self.random_kuso_flag and random.randint(1,10) == 1:
-            # ゴミコードなので書き直したいけどとりあえずは…
-            id = random.randint(1,self.total_count)
-            r = requests.get("http://horesase.azurewebsites.net/api/meigens/" + str(id))
-            response = json.loads(r.text)
-            async with aiohttp.ClientSession() as session:
-                async with session.get(response['image']) as resp:
-                    if resp.status != 200:
-                        await message.channel.send("エラー：APIが応答しません。HTTP Response Code:"  + str(resp.status))
-                    data = io.BytesIO(await resp.read())
-                    if not self.verbose_flag:
-                        await message.channel.send(file=discord.File(data, 'horesase.png'))
-                    else:
-                        context = "character: " + re.sub(r'\([^)]*\)', '', response["character"]) + "\n" + \
-                                "id: "        + str(response["id"]) + "\n" + \
-                                "name: "      + response["title"] + "\n" + \
-                                "body: "      + response["body"] + "\n"
-                        await message.channel.send(context,file=discord.File(data, 'horesase.png'))
+        # if self.random_kuso_flag and random.randint(1,10) == 1:
+        #     # ゴミコードなので書き直したいけどとりあえずは…
+        #     id = random.randint(1,self.total_count)
+        #     r = requests.get("http://horesase.azurewebsites.net/api/meigens/" + str(id))
+        #     response = json.loads(r.text)
+        #     async with aiohttp.ClientSession() as session:
+        #         async with session.get(response['image']) as resp:
+        #             if resp.status != 200:
+        #                 await message.channel.send("エラー：APIが応答しません。HTTP Response Code:"  + str(resp.status))
+        #             data = io.BytesIO(await resp.read())
+        #             if not self.verbose_flag:
+        #                 await message.channel.send(file=discord.File(data, 'horesase.png'))
+        #             else:
+        #                 context = "character: " + re.sub(r'\([^)]*\)', '', response["character"]) + "\n" + \
+        #                         "id: "        + str(response["id"]) + "\n" + \
+        #                         "name: "      + response["title"] + "\n" + \
+        #                         "body: "      + response["body"] + "\n"
+        #                 await message.channel.send(context,file=discord.File(data, 'horesase.png'))
 
             
     #コマンド一覧
@@ -159,17 +159,17 @@ class HoresaseCog(commands.Cog):
             message = [d["title"] for d in data]
         await ctx.send(message)
          
-    @commands.command(aliases=["v"])
-    async def verbose(self, ctx):
-        self.verbose_flag = not self.verbose_flag
-        message = "verboseモードがオンになりました" if self.verbose_flag else "verboseモードがオフになりました"
-        await ctx.send(message)
+    # @commands.command(aliases=["v"])
+    # async def verbose(self, ctx):
+    #     self.verbose_flag = not self.verbose_flag
+    #     message = "verboseモードがオンになりました" if self.verbose_flag else "verboseモードがオフになりました"
+    #     await ctx.send(message)
 
-    @commands.command(aliases=["rk"])
-    async def random_kuso(self, ctx):
-        self.random_kuso_flag = not self.random_kuso_flag
-        message = "ランダムクソリプモードがオンになりました" if self.random_kuso_flag else "ランダムクソリプモードがオフになりました"
-        await ctx.send(message)
+    # @commands.command(aliases=["rk"])
+    # async def random_kuso(self, ctx):
+    #     self.random_kuso_flag = not self.random_kuso_flag
+    #     message = "ランダムクソリプモードがオンになりました" if self.random_kuso_flag else "ランダムクソリプモードがオフになりました"
+    #     await ctx.send(message)
 
 # Bot本体側からコグを読み込む際に呼び出される関数。
 def setup(bot):

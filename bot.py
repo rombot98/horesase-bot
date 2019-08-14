@@ -14,10 +14,7 @@ class HoresaseBot(commands.Bot):
         super().__init__(command_prefix=command_prefix, description=description, case_insensitive=True)
 
         for cog in INITIAL_EXTENSIONS:
-            try:
-                self.load_extension(cog)
-            except Exception:
-                traceback.print_exc()
+            self.load_extension(cog)
 
     async def on_ready(self):
         print('-----')
